@@ -22,7 +22,7 @@ resource "helm_release" "redis" {
   version = "17.3.11"
 
   values = [
-    file("${path.module}/redis-config.yml"),
+    file("${path.module}/redis/redis-config.yml"),
   ]
 
   # Sets up a Redis password so we can connect to the cluster.

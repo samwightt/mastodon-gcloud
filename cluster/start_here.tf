@@ -1,3 +1,5 @@
+# This file is where we define all of the providers we'll use, as well as define their configs.
+
 terraform {
   required_providers {
     google = {

@@ -33,3 +33,10 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+app/.terraform
+app/charts
+app/mastodon
+app/mastodon_kb
+.idea
+app/.terraform.lock.hcl
