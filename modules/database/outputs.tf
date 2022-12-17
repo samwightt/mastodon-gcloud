@@ -11,15 +11,9 @@ output "iam_service_account" {
   }
 }
 
-output "secret" {
-  value = {
-    name = kubernetes_secret.db_credentials.metadata[0].name
-  }
-}
-
 output "user" {
   value = {
-    name = google_sql_user.db_user.name
+    username = google_sql_user.db_user.name
     password = google_sql_user.db_user.password
   }
   sensitive = true

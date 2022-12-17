@@ -24,6 +24,14 @@ resource "kubernetes_service_account" "db" {
     annotations = {
       "iam.gke.io/gcp-service-account" = google_service_account.db.email
     }
+
+    labels = {
+      "app.kubernetes.io/name" = "database"
+      "app.kubernetes.io/instance" = "${var.instance_name}"
+      "app.kubernetes.io/component" = "db-access-sa"
+      "app.kubernetes.io/part-of" = "mastodon"
+      "app.kubernetes.io/managed-by" = "terraform"
+    }
   }
 }
 
