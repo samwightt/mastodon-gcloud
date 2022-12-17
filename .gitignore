@@ -39,4 +39,4 @@ app/charts
 app/mastodon
 app/mastodon_kb
 .idea
-app/.terraform.lock.hcl
+*terraform.tfvars

@@ -7,6 +7,7 @@ module "db" {
 
   project_id = var.gcp_project_id
   region = var.gcp_region
+  instance_name = "${var.resource_prefix}-db"
 
   db_user = {
     username = "mastodon"
