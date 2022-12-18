@@ -6,6 +6,13 @@
 # We only use the GCP provider in this module, so no need for anything else.
 
 terraform {
+  cloud {
+    organization = "urbanists-dot-social"
+    workspaces {
+      name = "cluster"
+    }
+  }
+
   required_providers {
     google = {
       source  = "hashicorp/google"
