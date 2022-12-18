@@ -1,13 +1,27 @@
 variable "name" {
   type = string
-  description = "The name of the secret."
-  default = "mastodon-rails-secrets"
+  description = "The name to put before all resources."
+  default = "mastodon-rails"
 }
 
-variable "redis_password" {
-  type = string
-  description = "The password for Redis."
+variable "redis" {
+  type = object({
+    service_name = string
+    password = string
+  })
+  description = "Details for Redis connection."
   sensitive = true
+}
+
+variable "cloudsql_connection_name" {
+  type = string
+  description = "The connection name of the CloudSQL instance."
+}
+
+variable "db_name" {
+  type = string
+  description = "The name of the database to use."
+  default = "app"
 }
 
 variable "db_user" {

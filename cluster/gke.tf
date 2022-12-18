@@ -6,7 +6,7 @@
 # Create a regional Autopilot cluster with sensible defaults, including
 # application-layer secrets encryption.
 resource "google_container_cluster" "gke_cluster" {
-  name = "${var.resource_prefix}-${var.gke_cluster_name}"
+  name = var.gke_cluster_name
   location = var.gcp_region
 
   # Enable autopilot mode. 

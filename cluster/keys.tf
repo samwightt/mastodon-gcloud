@@ -11,13 +11,13 @@
 # Make a key and a key ring to use for application-layer secrets encryption.
 # Note that the key ring and keys cannot be deleted once created.
 resource "google_kms_key_ring" "ase_key_ring" {
-  name = "${var.resource_prefix}-${var.encryption_key_ring_name}"
+  name = var.encryption_key_ring_name
   location = var.gcp_region
   depends_on = [google_project_service.kms_api]
 }
 
 resource "google_kms_crypto_key" "ase_crypto_key" {
-  name = "${var.resource_prefix}-${var.encryption_key_name}"
+  name = var.encryption_key_name
   key_ring = google_kms_key_ring.ase_key_ring.id
   # Set purpose to ENCRYPT_DECRYPT so that we can encrypt and decrypt secrets.
   purpose = "ENCRYPT_DECRYPT"

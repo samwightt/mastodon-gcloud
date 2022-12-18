@@ -23,5 +23,6 @@ output "instance" {
   value = {
     name = google_sql_database_instance.db.name
     region = google_sql_database_instance.db.region
+    connection_name = google_sql_database_instance.db.connection_name
   }
 }
