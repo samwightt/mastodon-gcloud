@@ -16,6 +16,9 @@ resource "google_container_cluster" "gke_cluster" {
   # Regional clusters offer the best availability and performance, so we create
   # an autopilot cluster.
   enable_autopilot = true
+  release_channel {
+    channel = "RAPID"
+  }
 
   # There's a bug in the GCP provider. If we don't provide this empty ip_allocation_policy
   # block then cluster creation will fail.

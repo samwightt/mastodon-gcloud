@@ -3,5 +3,5 @@ resource "helm_release" "cnpg_operator" {
   chart = "cnpg/cloudnative-pg"
   namespace = "cnpg-system"
   create_namespace = true
-
+  name = "cnpg"
 }
