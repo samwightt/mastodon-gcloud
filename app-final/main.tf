@@ -35,7 +35,7 @@ provider "google" {
 
 # Need to look up cluster config so that we can get the cluster's endpoint and CA cert.
 data "google_container_cluster" "gke_cluster" {
-  name = "${var.resource_prefix}-cluster"
+  name = var.gke_cluster_name
   location = var.gcp_region
 }
 
