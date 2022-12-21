@@ -3,9 +3,10 @@
 
 provider "registry.terraform.io/hashicorp/google" {
   version     = "4.44.1"
-  constraints = "~> 4.44.0"
+  constraints = ">= 4.44.0, ~> 4.44.0"
   hashes = [
     "h1:m1mVJKnt+s+FbfwqSm6/kcGy6FakWqPV8xjGqwNu+Gg=",
+    "h1:raHEXJpQCHohqYupGPt56hD7LrO0uq3O/ve7x4AQ14I=",
     "zh:0668252985a677707bf46e393a96ea63b58b93d730f4daf8357246f7e6dd8ba9",
     "zh:1cbfa5c7dcf02acb90718474a6b0e6af6a7c839c964270feaf55cddb537ef762",
     "zh:44d601bc4667158c45ab584e60662f69d38e9febbb65b9bb1c5a84fdccc8b91e",
@@ -23,8 +24,9 @@ provider "registry.terraform.io/hashicorp/google" {
 
 provider "registry.terraform.io/hashicorp/helm" {
   version     = "2.7.1"
-  constraints = "~> 2.7.1"
+  constraints = ">= 2.7.1, ~> 2.7.1"
   hashes = [
+    "h1:L5qLTfZH7PnZt9+YnS7iYmPBEDQOpEjZiF0v50BRNi8=",
     "h1:OGZRkgiLBWmoA8/a9xZnEs5gsC5JhW+75++MkCPQbqw=",
     "zh:13e2467092deeff01c4cfa2b54ba4510aa7a9b06c58f22c4215b0f4333858364",
     "zh:4549843db4fdf5d8150e8c0734e67b54b5c3bcfc914e3221e6952f428fb984d2",
@@ -43,9 +45,10 @@ provider "registry.terraform.io/hashicorp/helm" {
 
 provider "registry.terraform.io/hashicorp/kubernetes" {
   version     = "2.16.1"
-  constraints = "~> 2.16.0"
+  constraints = ">= 2.16.0, ~> 2.16.0"
   hashes = [
     "h1:PO4Ye/+lu5hCaUEOtwNOldQYoA0dqL1bcBICIpdlcd8=",
+    "h1:kO/d+ZMZYM2tNMMFHZqBmVR0MeemoGnI2G2NSN92CrU=",
     "zh:06224975f5910d41e73b35a4d5079861da2c24f9353e3ebb015fbb3b3b996b1c",
     "zh:2bc400a8d9fe7755cca27c2551564a9e2609cfadc77f526ef855114ee02d446f",
     "zh:3a479014187af1d0aec3a1d3d9c09551b801956fe6dd29af1186dec86712731b",

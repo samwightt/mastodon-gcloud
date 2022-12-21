@@ -6,91 +6,6 @@ terraform {
     }
   }
 }
-
-resource "kubernetes_service_account" "sidecar_job_controller" {
-  metadata {
-    name = "sidecar-job-controller"
-    namespace = "kube-system"
-  }
-}
-
-resource "kubernetes_cluster_role" "sidecar_cluster_role" {
-  metadata {
-    name = "sidecar-job-controller"
-  }
-
-  rule {
-    api_groups = [""]
-    resources = ["pods"]
-    verbs = ["delete", "get", "list", "watch"]
-  }
-
-  rule {
-    api_groups = [""]
-    resources = ["pods/exec"]
-    verbs = ["create", "get"]
-  }
-}
-
-resource "kubernetes_cluster_role_binding" "sidecar_binding_cluster" {
-  metadata {
-    name = "sidecar-job-controller"
-  }
-
-  subject {
-    kind = "ServiceAccount"
-    name = kubernetes_service_account.sidecar_job_controller.metadata[0].name
-    namespace = kubernetes_service_account.sidecar_job_controller.metadata[0].namespace
-  }
-
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind = "ClusterRole"
-    name = kubernetes_cluster_role.sidecar_cluster_role.metadata[0].name
-  }
-}
-
-resource "kubernetes_deployment" "sidecar_controller_deployment" {
-  metadata {
-    namespace = "kube-system"
-    name = "sidecar-controller"
-  }
-
-  spec {
-    replicas = 1
-
-    selector {
-      match_labels = {
-        "name" = "sidecar-controller"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          name = "sidecar-controller"
-        }
-      }
-
-      spec {
-        service_account_name = kubernetes_service_account.sidecar_job_controller.metadata[0].name
-        container {
-          image = "nrmitchi/k8s-controller-sidecars:latest"
-          image_pull_policy = "Always"
-          name = "sidecar-controller"
-          resources {
-            limits = {
-              cpu = "200m"
-              memory = "128Mi"
-            }
-          }
-        }
-      }
-    }
-  }
-  
-}
-
 resource "kubernetes_job" "setup_db_job" {
   metadata {
     name = "setup-db-job"
@@ -98,20 +13,64 @@ resource "kubernetes_job" "setup_db_job" {
 
   spec {
     template {
-      metadata {
-        annotations = {
-          "nrmitchi.com/sidecars" = "cloud-sql-proxy"
-        }
-      }
-
       spec {
         service_account_name = var.db_service_account.name
         restart_policy = "Never"
 
+        volume {
+          name = "kubexit"
+          empty_dir {}
+        }
+
+        volume {
+          name = "graveyard"
+          empty_dir {
+            medium = "Memory"
+          }
+        }
+
         container {
           name = "setup-db"
           image = "tootsuite/mastodon:latest"
-          command = ["bundle", "exec", "rails", "db:migrate"]
+          command = ["/kubexit/kubexit", "bundle", "exec", "rails", "db:migrate"]
+
+          env {
+            name = "KUBEXIT_NAME"
+            value = "setup-db"
+          }
+          env {
+            name = "KUBEXIT_GRAVEYARD"
+            value = "/graveyard"
+          }
+          env {
+            name = "KUBEXIT_BIRTH_DEPS"
+            value = "cloudsql-proxy"
+          }
+          env {
+            name = "KUBEXIT_POD_NAME"
+            value_from {
+              field_ref {
+                field_path = "metadata.name"
+              }
+            }
+          }
+          env {
+            name = "KUBEXIT_NAMESPACE"
+            value_from {
+              field_ref {
+                field_path = "metadata.namespace"
+              }
+            }
+          }
+
+          volume_mount {
+            mount_path = "/graveyard"
+            name = "graveyard"
+          }
+          volume_mount {
+            name = "kubexit"
+            mount_path = "/kubexit"
+          }
 
           resources {
             requests = {
@@ -136,7 +95,32 @@ resource "kubernetes_job" "setup_db_job" {
         container {
           name = "cloud-sql-proxy"
           image = "gcr.io/cloudsql-docker/gce-proxy:1.33.1"
+
+          volume_mount {
+            name = "kubexit"
+            mount_path = "/kubexit"
+          }
+
+          volume_mount {
+            name = "graveyard"
+            mount_path = "/graveyard"
+          }
+
+          env {
+            name = "KUBEXIT_NAME"
+            value = "cloudsql-proxy"
+          }
+          env {
+            name = "KUBEXIT_GRAVEYARD"
+            value = "/graveyard"
+          }
+          env {
+            name = "KUBEXIT_DEATH_DEPS"
+            value = "setup-db"
+          }
+
           command = [
+            "/kubexit/kubexit",
             "/cloud_sql_proxy",
             "-log_debug_stdout",
             "-instances=$(CLOUDSQL_CONNECTION_NAME)=tcp:5432"
@@ -157,6 +141,16 @@ resource "kubernetes_job" "setup_db_job" {
               memory = "250Mi"
               cpu = "250m"
             }
+          }
+        }
+
+        init_container {
+          name = "kubexit"
+          image = "karlkfi/kubexit:latest"
+          command = ["cp", "/bin/kubexit", "/kubexit/kubexit"]
+          volume_mount {
+            name = "kubexit"
+            mount_path = "/kubexit"
           }
         }
       }
